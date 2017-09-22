@@ -1,0 +1,42 @@
+{
+  "name": "type-thresholder",
+  "version": "0.1.0",
+  "description": "Flexible thresholder",
+  "main": "dist/index.js",
+  "scripts": {
+    "t": "jasmine-ts spec/**/*.spec.ts",
+    "co": "nyc -e .ts -x spec/**/*.spec.ts npm run t",
+    "test": "npm run co && nyc report --reporter=text-lcov | coveralls"
+  },
+  "engines": {
+    "node": ">=5.12"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^2.6.0",
+    "@types/node": "^8.0.27",
+    "coveralls": "^2.13.1",
+    "jasmine-ts": "^0.2.1",
+    "nyc": "^11.2.1",
+    "source-map-support": "^0.4.17",
+    "ts-node": "^3.3.0",
+    "typescript": "^2.5.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wux5/type-threshold.git"
+  },
+  "keywords": [
+    "Threshold",
+    "Circuit",
+    "Breaker",
+    "NodeJS",
+    "TypeScript",
+    "Javascript"
+  ],
+  "author": "Xiaoqiong Wu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wux5/type-threshold/issues"
+  },
+  "homepage": "https://github.com/wux5/type-threshold#readme"
+}
