@@ -38,5 +38,6 @@
   "bugs": {
     "url": "https://github.com/wux5/type-threshold/issues"
   },
-  "homepage": "https://github.com/wux5/type-threshold#readme"
+  "homepage": "https://github.com/wux5/type-threshold#readme",
+  "dependencies": {}
 }
