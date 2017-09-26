@@ -8,7 +8,23 @@ Flexible thresholder for all kinds of threshold triggers.
 npm i --save type-thresholder
 ```
 
-## Usage
+## Usage - JS
+```js
+var Thresholder = require('type-thresholder').Thresholder;
+var t = new Thresholder(3, 0, 0, 10, '>');
+t.on('break', function() {
+  // alert...
+});
+t.on('clear', function() {
+  // clear...
+});
+
+t.push(11);
+t.push(12);
+t.push(13); // will trigger break event
+```
+
+## Usage - TypeScript
 ```js
 describe('breaks when something happened X times consecutively', () => {
   it('should break on X occurrences with boolean values', done => {

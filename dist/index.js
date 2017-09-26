@@ -1,40 +1,59 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const events_1 = require("events");
-const operatorFunctions = {
-    '=': (a, b) => a === b,
-    '<': (a, b) => a < b,
-    '>': (a, b) => a > b
+var events_1 = require("events");
+var operatorFunctions = {
+    '=': function (a, b) { return a === b; },
+    '<': function (a, b) { return a < b; },
+    '>': function (a, b) { return a > b; }
 };
-class Thresholder extends events_1.EventEmitter {
-    constructor(threshold = 1, duration = 0, clearAfter = 0, boundary, operator) {
-        super();
-        this._violations = 0;
-        this._clears = 0;
-        this.bucket = []; // bucket to keep timestamp of past boundary hits within the duration
-        this.isBroken = false;
-        this.threshold = threshold;
-        this.duration = duration;
-        this.clearAfter = clearAfter;
+var Thresholder = /** @class */ (function (_super) {
+    __extends(Thresholder, _super);
+    function Thresholder(threshold, duration, clearAfter, boundary, operator) {
+        if (threshold === void 0) { threshold = 1; }
+        if (duration === void 0) { duration = 0; }
+        if (clearAfter === void 0) { clearAfter = 0; }
+        var _this = _super.call(this) || this;
+        _this._violations = 0;
+        _this._clears = 0;
+        _this.bucket = []; // bucket to keep timestamp of past boundary hits within the duration
+        _this.isBroken = false;
+        _this.threshold = threshold;
+        _this.duration = duration;
+        _this.clearAfter = clearAfter;
         if (boundary) {
-            this.boundary = boundary;
+            _this.boundary = boundary;
             if (operator) {
-                this.operator = operator;
+                _this.operator = operator;
             }
             else {
                 throw new Error('An operator (=, <, >) must be specified for how to check value against boundary');
             }
         }
+        return _this;
     }
-    get violations() {
-        return this.duration > 0 ? this.bucket.length : this._violations;
-    }
-    push(val, prop) {
+    Object.defineProperty(Thresholder.prototype, "violations", {
+        get: function () {
+            return this.duration > 0 ? this.bucket.length : this._violations;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Thresholder.prototype.push = function (val, prop) {
         if (this.isBroken && this.clearAfter > 0) {
             return;
         }
-        let violation = false;
-        let value = (typeof (val) === 'object' && prop in val) ? val[prop] : val;
+        var violation = false;
+        var value = (typeof (val) === 'object' && prop in val) ? val[prop] : val;
         if (this.duration > 0) {
             this.removeExpiredItems();
         }
@@ -61,13 +80,13 @@ class Thresholder extends events_1.EventEmitter {
         else if (this.duration === 0) {
             this._violations = 0;
         }
-    }
-    break(val) {
+    };
+    Thresholder.prototype.break = function (val) {
         this.isBroken = true;
         if (this.duration > 0) {
             this.bucket.splice(0);
             if (this.clearAfter > 0) {
-                const timer = global.setTimeout(this.clear.bind(this), this.clearAfter * 1000);
+                var timer = global.setTimeout(this.clear.bind(this), this.clearAfter * 1000);
                 if (timer.unref) {
                     timer.unref();
                 }
@@ -77,24 +96,25 @@ class Thresholder extends events_1.EventEmitter {
             this._violations = 0;
         }
         this.emit('break', val);
-    }
-    clear() {
+    };
+    Thresholder.prototype.clear = function () {
         this.isBroken = false;
         this.emit('clear');
-    }
-    removeExpiredItems() {
-        let len = this.bucket.length;
+    };
+    Thresholder.prototype.removeExpiredItems = function () {
+        var len = this.bucket.length;
         if (len === 0) {
             return;
         }
-        const now = Date.now();
-        const start = now - this.duration * 1000;
-        let i = 0;
+        var now = Date.now();
+        var start = now - this.duration * 1000;
+        var i = 0;
         while (i < len && this.bucket[i] < start) {
             i++;
         }
         this.bucket.splice(0, i);
-    }
-}
+    };
+    return Thresholder;
+}(events_1.EventEmitter));
 exports.Thresholder = Thresholder;
 //# sourceMappingURL=index.js.map
