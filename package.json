@@ -1,8 +1,9 @@
 {
   "name": "type-thresholder",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Flexible thresholder",
   "main": "dist/index.js",
+  "types": "dts/index.d.ts",
   "scripts": {
     "t": "jasmine-ts spec/**/*.spec.ts",
     "co": "nyc -e .ts -x spec/**/*.spec.ts npm run t && nyc report --reporter=lcov",
