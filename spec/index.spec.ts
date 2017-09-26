@@ -178,7 +178,7 @@ describe('Thresholder class', () => {
       t.push({ prop: 11 }, 'prop');
       expect(t.violations).toEqual(1);
 
-      t = new Thresholder(3, 3, 0, 10, '='); // 3 times in 3 seconds, value < 10
+      t = new Thresholder(3, 3, 0, 10, '='); // 3 times in 3 seconds, value = 10
       t.push({ prop: 9 }, 'prop');
       expect(t.violations).toEqual(0);
 
