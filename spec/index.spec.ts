@@ -139,9 +139,9 @@ describe('Thresholder class', () => {
         t.push(true);
         t.push(true);
         t.push(true);
-        t.push(false);
-        t.push(false);
-        t.push(false);
+        t.push();
+        t.push();
+        t.push();
       });
       it('should clear 1 minute after it breaks', done => {
         const t = new Thresholder(3, 3, 60);

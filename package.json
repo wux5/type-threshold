@@ -1,6 +1,6 @@
 {
   "name": "type-thresholder",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Flexible thresholder",
   "main": "dist/index.js",
   "types": "dts/index.d.ts",

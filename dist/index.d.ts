@@ -13,7 +13,7 @@ export declare class Thresholder<T> extends EventEmitter {
     isBroken: boolean;
     constructor(threshold?: number, duration?: number, clearAfter?: number, boundary?: T, operator?: Operator);
     readonly violations: number;
-    push(val: T | any, prop?: string): void;
+    push(val?: T | any, prop?: string): void;
     private break(val);
     private clear();
     private removeExpiredItems();

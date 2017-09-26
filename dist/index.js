@@ -57,7 +57,7 @@ var Thresholder = /** @class */ (function (_super) {
         if (this.duration > 0) {
             this.removeExpiredItems();
         }
-        if ((this.boundary !== undefined && operatorFunctions[this.operator](value, this.boundary)) || value === true) {
+        if ((this.boundary === undefined && val !== undefined) || (this.boundary !== undefined && operatorFunctions[this.operator](value, this.boundary))) {
             if (this.duration > 0) {
                 this.bucket.push(Date.now());
             }

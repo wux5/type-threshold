@@ -38,7 +38,7 @@ export class Thresholder<T> extends EventEmitter {
     return this.duration > 0 ? this.bucket.length : this._violations;
   }
 
-  push(val: T | any, prop?: string): void {
+  push(val?: T | any, prop?: string): void {
     if (this.isBroken && this.clearAfter > 0) {
       return;
     }
@@ -47,7 +47,7 @@ export class Thresholder<T> extends EventEmitter {
     if (this.duration > 0) {
       this.removeExpiredItems();
     }
-    if ((this.boundary !== undefined && operatorFunctions[this.operator](value, this.boundary)) || value === true) {
+    if ((this.boundary === undefined && val !== undefined) || (this.boundary !== undefined && operatorFunctions[this.operator](value, this.boundary))) {
       if (this.duration > 0) {
         this.bucket.push(Date.now());
       } else {
