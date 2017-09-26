@@ -7,16 +7,19 @@ const operatorFunctions = {
   '>': <T>(a: T, b: T): boolean => a > b
 };
 
-export class Thresholder extends EventEmitter {
+export class Thresholder<T> extends EventEmitter {
+  private _violations: number = 0;
+  private _clears: number = 0;
+
   readonly threshold: number; // breaks at this number of hits
-  readonly duration: number;  // check in past durations, in seconds
+  readonly duration: number;  // check in past durations, in seconds. Check consecutive times when 0.
   readonly operator: Operator;  // operator for checking values against the boundary
-  readonly boundary: any;  // hit boundary
-  readonly bucket: any[] = []; // bucket to keep timestamp of past boundary hits within the duration
+  readonly boundary: T;  // hit boundary
+  readonly bucket: number[] = []; // bucket to keep timestamp of past boundary hits within the duration
   readonly clearAfter: number; // Clear broken state, in seconds. When 0 it clears on next valid value
   isBroken: boolean = false;
 
-  constructor(threshold: number = 1, duration: number = 0, clearAfter: number = 0, boundary?: any, operator?: Operator) {
+  constructor(threshold: number = 1, duration: number = 0, clearAfter: number = 0, boundary?: T, operator?: Operator) {
     super();
     this.threshold = threshold;
     this.duration = duration;
@@ -31,41 +34,57 @@ export class Thresholder extends EventEmitter {
     }
   }
 
-  get length(): number {
-    return this.bucket.length;
+  get violations(): number {
+    return this.duration > 0 ? this.bucket.length : this._violations;
   }
 
-  push(val: any, prop?: string): void{
+  push(val: T | any, prop?: string): void {
     if (this.isBroken && this.clearAfter > 0) {
       return;
     }
     let violation = false;
     let value = (typeof (val) === 'object' && prop in val) ? val[prop] : val;
-    this.removeExpiredItems();
-    if (this.boundary && operatorFunctions[this.operator](value, this.boundary)) {
-      violation = true;
+    if (this.duration > 0) {
+      this.removeExpiredItems();
     }
-    if (violation || value === true) {
-      this.bucket.push(Date.now());
-      if (this.bucket.length >= this.threshold) {
+    if ((this.boundary !== undefined && operatorFunctions[this.operator](value, this.boundary)) || value === true) {
+      if (this.duration > 0) {
+        this.bucket.push(Date.now());
+      } else {
+        this._clears = 0;
+        this._violations++;
+      }
+      if (this.violations >= this.threshold) {
         this.break(val);
       }
-    } else if (this.clearAfter === 0) {
-      this.clear();
+    } else if (this.isBroken && this.clearAfter === 0) {
+      this._clears++;
+      this._violations = 0;
+      if (this._clears >= this.threshold) {
+        this._clears = 0;
+        this.clear();
+      }
+    } else if (this.duration === 0) {
+      this._violations = 0;
     }
   }
 
-  private break(val: any): void {
+  private break(val: T): void {
     this.isBroken = true;
-    this.bucket.splice(0);
-    if (this.clearAfter > 0) {
-      const timer = global.setTimeout(this.clear.bind(this), this.clearAfter * 1000);
-      if (timer.unref) {
-        timer.unref();
+    if (this.duration > 0) {
+      this.bucket.splice(0);
+      if (this.clearAfter > 0) {
+        const timer = global.setTimeout(this.clear.bind(this), this.clearAfter * 1000);
+        if (timer.unref) {
+          timer.unref();
+        }
       }
+    } else {
+      this._violations = 0;
     }
     this.emit('break', val);
   }
+
   private clear(): void {
     this.isBroken = false;
     this.emit('clear');
